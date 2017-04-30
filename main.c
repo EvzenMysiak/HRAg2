@@ -6,6 +6,33 @@
 
 typedef int (*commands)(char*);
 
+//-------Struktury----------
+struct central_store{
+    int jedlo;
+    int pivo;
+    int ruda;
+    int mince;
+    int vodka;
+    int palenka;
+};
+
+struct my_player{
+    int ID;
+    char name[20];
+    int lives;
+    int hunger;
+    int energy;
+    int power;
+    int stamina;
+    int defence;
+};
+
+struct wolf{
+    int sila;
+    int defence;
+    int stamina;
+};
+//-------END struktury------
 
 /*
  * 1.funkcia oddych (naplni si inventar a znizi si unavu/nudu)
@@ -122,6 +149,9 @@ int main(){
 
     int pokracovat = 1;
     char *command;
+    struct central_store my_items;
+    struct my_player myplayer;
+    struct wolf wolf_player;
 
     while (pokracovat)
     {
