@@ -7,16 +7,16 @@
 typedef int (*commands)(char*);
 
 //-------Struktury----------
-struct central_store{
+typedef struct central_store{
     int jedlo;
     int pivo;
     int ruda;
     int mince;
     int vodka;
     int palenka;
-};
+}store;
 
-struct my_player{
+typedef struct my_player{
     int ID;
     char name[20];
     int lives;
@@ -25,13 +25,13 @@ struct my_player{
     int power;
     int stamina;
     int defence;
-};
+}player;
 
-struct wolf{
+typedef struct wolf{
     int sila;
     int defence;
     int stamina;
-};
+}WOLF;
 //-------END struktury------
 
 /*
@@ -48,7 +48,21 @@ struct wolf{
 
 //funkcie z prikazoveho riadku
 int menu(char* params){
-    printf("menu");
+    printf("\nCast MENU\n");
+    player hrac;
+    int *pole_hracov;
+    int kolko;
+
+    printf("kolko chces hracov\n");
+    scanf("%d",&kolko);
+    pole_hracov=(char *)malloc(kolko);
+    for (int i = 0; i <kolko; ++i) {
+        pole_hracov[i]=i;
+    }
+    printf("\nvelkost pola %d\n", sizeof(pole_hracov));
+    for (int j = 0; j <kolko; ++j) {
+        printf("vypis %d\n",pole_hracov[j]);
+    }
     return 1;
 }
 
@@ -83,7 +97,6 @@ int make(char* params){
 }
 
 int nothing(char* params){
-    printf("nothing");
     return 1;
 }
 //koniec funkcii z prikazoveho riadku
@@ -145,13 +158,18 @@ char *get_command(){
     return buffer;
 }
 
+
 int main(){
 
     int pokracovat = 1;
     char *command;
-    struct central_store my_items;
-    struct my_player myplayer;
-    struct wolf wolf_player;
+
+    store my_items;
+    player hrac;
+    WOLF wolf_player;
+
+
+
 
     while (pokracovat)
     {
@@ -163,3 +181,4 @@ int main(){
 
 //TODO vo funkcii print dat ako parameter ze ktory trpaslik sa ma printovat a tiez ak pride v parametri poziadavka
 //TODO na vypis vsetkych tak v switch case sa zvoli ina funkcia
+//TODO pole hracov
