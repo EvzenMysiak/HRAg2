@@ -49,7 +49,7 @@ typedef struct wolf{
 //funkcie z prikazoveho riadku
 int menu(char* params){
     printf("\nCast MENU\n");
-    char testtext;
+    char testtext[500];
     char *testtext2;
     int pocet_riadkov;
     player* myplayer;
@@ -93,8 +93,7 @@ void loadFromFile(FILE *fin, player myplayer[]) {
         myplayer++;
     }
 }
-int parse(char *line, player *myplayer)
-{
+int parse(char *line, player *myplayer){
     //vyuzivame strchr - najde najblizsi vyskyt znaku v retazci
     char* next = strchr(line, ',');
 
@@ -111,38 +110,39 @@ int parse(char *line, player *myplayer)
     strcpy(myplayer->name, line);
     line = next;
     next = strchr(line, ',');
+
     next[0] = '\0';
     next++;
 
-    myplayer->lives=*line;
+    myplayer->lives=atoi(line);
     line = next;
     next = strchr(line, ',');
     next[0] = '\0';
     next++;
 
-    myplayer->hunger=(int)*line;
+    myplayer->hunger=atoi(line);
     line = next;
     next = strchr(line, ',');
     next[0] = '\0';
     next++;
 
-    myplayer->energy=(int)*line;
+    myplayer->energy=atoi(line);
     line = next;
     next = strchr(line, ',');
     next[0] = '\0';
     next++;
 
-    myplayer->power=(int)*line;
+    myplayer->power=atoi(line);
     line = next;
     next = strchr(line, ',');
     next[0] = '\0';
     next++;
 
-    myplayer->stamina=(int)*line;
+    myplayer->stamina=atoi(line);
     line = next;
 
 
-    myplayer->defence=(int)*line;
+    myplayer->defence=atoi(line);
     line = next;
 
     return 1;
@@ -154,8 +154,7 @@ int quit(char* params){
 }
 
 int print(char* params){
-    printf("print");
-    return 1;
+
 }
 
 int change(char* params){
@@ -295,4 +294,4 @@ int main(){
 
 //TODO vo funkcii print dat ako parameter ze ktory trpaslik sa ma printovat a tiez ak pride v parametri poziadavka
 // TODO prerobit zapisovanie do struktury
-
+// TODO porozmyslat ako si mozu funkcie v prikazovom riadku posielat hodnoty bez globalnych premennych
