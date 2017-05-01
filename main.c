@@ -17,7 +17,7 @@ typedef struct central_store{
 }store;
 
 typedef struct my_player{
-    int ID;
+    char ID[3];
     char name[20];
     int lives;
     int hunger;
@@ -49,20 +49,102 @@ typedef struct wolf{
 //funkcie z prikazoveho riadku
 int menu(char* params){
     printf("\nCast MENU\n");
-    player hrac;
-    int *pole_hracov;
-    int kolko;
+    char testtext;
+    char *testtext2;
+    int pocet_riadkov;
+    player* myplayer;
 
-    printf("kolko chces hracov\n");
-    scanf("%d",&kolko);
-    pole_hracov=(char *)malloc(kolko);
-    for (int i = 0; i <kolko; ++i) {
-        pole_hracov[i]=i;
+    FILE *fdefault;
+    fdefault=fopen("/home/mysiak/CLionProjects/CV11/HRAg2/default.txt","r");
+    if (fdefault==NULL){
+        printf("Subor s defaultnym nastavenim sa nepodarilo otvorit");
+        return NULL;
     }
-    printf("\nvelkost pola %d\n", sizeof(pole_hracov));
-    for (int j = 0; j <kolko; ++j) {
-        printf("vypis %d\n",pole_hracov[j]);
+    pocet_riadkov=rows(fdefault);
+    rewind(fdefault);
+    myplayer=(player*)calloc(pocet_riadkov,sizeof(player));
+    loadFromFile(fdefault,myplayer);
+
+    for (int i = 0; i <pocet_riadkov; ++i) {
+        printf("%s ",myplayer[i].ID);
+        printf("%s ",myplayer[i].name);
+        printf("%d ",myplayer[i].lives);
+        printf("%d ",myplayer[i].hunger);
+        printf("%d ",myplayer[i].energy);
+        printf("%d ",myplayer[i].power);
+        printf("%d ",myplayer[i].stamina);
+        printf("%d \n",myplayer[i].defence);
     }
+
+    fclose(fdefault);
+    return 1;
+}
+
+void loadFromFile(FILE *fin, player myplayer[]) {
+
+    char buffer[1000];
+
+
+    //nacitame riadok, rozdelime, posunieme sa na dalsie mesto
+    while (fgets(buffer, 1000, fin) != NULL)
+    {
+        puts(buffer);
+        parse(buffer, myplayer);
+        myplayer++;
+    }
+}
+int parse(char *line, player *myplayer)
+{
+    //vyuzivame strchr - najde najblizsi vyskyt znaku v retazci
+    char* next = strchr(line, ',');
+
+    next[0] = '\0';
+    next++;
+
+    strcpy(myplayer->ID, line);
+    line = next;
+
+    next = strchr(line, ',');
+    next[0] = '\0';
+    next++;
+
+    strcpy(myplayer->name, line);
+    line = next;
+    next = strchr(line, ',');
+    next[0] = '\0';
+    next++;
+
+    myplayer->lives=*line;
+    line = next;
+    next = strchr(line, ',');
+    next[0] = '\0';
+    next++;
+
+    myplayer->hunger=(int)*line;
+    line = next;
+    next = strchr(line, ',');
+    next[0] = '\0';
+    next++;
+
+    myplayer->energy=(int)*line;
+    line = next;
+    next = strchr(line, ',');
+    next[0] = '\0';
+    next++;
+
+    myplayer->power=(int)*line;
+    line = next;
+    next = strchr(line, ',');
+    next[0] = '\0';
+    next++;
+
+    myplayer->stamina=(int)*line;
+    line = next;
+
+
+    myplayer->defence=(int)*line;
+    line = next;
+
     return 1;
 }
 
@@ -101,6 +183,17 @@ int nothing(char* params){
 }
 //koniec funkcii z prikazoveho riadku
 
+int rows(FILE* myfile) {
+    int pocet = 0;
+    int c;
+    while((c=getc(myfile)) != EOF)
+    {
+        if (c == '\n')
+            pocet++;
+    }
+    return pocet+1;
+}
+
 
 commands find(char* command){
     int n;
@@ -109,13 +202,13 @@ commands find(char* command){
         char *alias;
         commands fcn;
     } command_tab[]={
-        {"exit", menu},
+        {"menu", menu},
         {"quit",quit},
         {"print",print},
-        {"uprava",change},
-        {"nacitaj",load},
-        {"uloz",save},
-        {"sprav",make},
+        {"change",change},
+        {"load",load},
+        {"save",save},
+        {"make",make},
     };
     n=sizeof(command_tab)/sizeof(command_tab[0]);
 
@@ -163,22 +256,43 @@ int main(){
 
     int pokracovat = 1;
     char *command;
+    int vyber_menu2=0;
+    int potvrdkoniec=1;
 
     store my_items;
     player hrac;
     WOLF wolf_player;
 
 
+    printf("\nVyberte si jednu z moznosti\n");
+    printf("\nMENU:\n1.\tmenu\n2.\tprint\n3.\tchange\n4.\tsave\n5.\tload\n6.\tmake\n7.\tquit\nPre splnenie prikazu"
+                   "napiste prikaz slovom a potvrdte enterom\n");
 
+    command = get_command();
+    make_command(command);
 
-    while (pokracovat)
-    {
-        command = get_command();
-        pokracovat = make_command(command);
+    while (potvrdkoniec) {
+        printf("\nVyberte si jednu z moznosti:\n");
+        printf("\n1.\tPrikazovy riadok\n2.\tKoniec hry");
+        scanf("%d", &vyber_menu2);
+        switch (vyber_menu2) {
+            case 1:
+                while (pokracovat) {
+                    printf("\nVyberte si jednu z moznosti\n");
+                    printf("\nMENU:\n1.\tmenu\n2.\tprint\n3.\tchange\n4.\tsave\n5.\tload\n6.\tmake\n7.\tquit\nPre splnenie prikazu"
+                                   "napiste prikaz slovom a potvrdte enterom\n");
+                    command = get_command();
+                    pokracovat = make_command(command);
+                }
+                break;
+            case 2:
+                potvrdkoniec=0;
+                break;
+        }
     }
     return 0;
 }
 
 //TODO vo funkcii print dat ako parameter ze ktory trpaslik sa ma printovat a tiez ak pride v parametri poziadavka
-//TODO na vypis vsetkych tak v switch case sa zvoli ina funkcia
-//TODO pole hracov
+// TODO prerobit zapisovanie do struktury
+
